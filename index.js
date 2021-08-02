@@ -3,7 +3,7 @@ const axios = require("axios")
 const cron = require("node-cron")
 require("dotenv").config()
 
-cron.schedule("* */1 * * * *",async()=>{
+cron.schedule("*/1 * * * *",async()=>{
   try {
     const getCpu = await cpu()
     const ram = getMemory()
