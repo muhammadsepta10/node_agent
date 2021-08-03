@@ -96,7 +96,7 @@ function getCPUInfo(){
 
 let stats1 = getCPUInfo();
 
-exports.cpu = async()=>{
+exports.cpu = ()=>{
     const stats2 = getCPUInfo();
     const endIdle = stats2.idle;
     const endTotal = stats2.total;
