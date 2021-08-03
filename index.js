@@ -7,18 +7,18 @@ cron.schedule("*/1 * * * *",async()=>{
   try {
     const getCpu = await cpu()
     const ram = getMemory()
-    const ram_usage = ((+ram.used)/1024/1024).toFixed(2)
-    const ram_free = ((+ram.free)/1024/1024).toFixed(2)
-    const ram_total = ((+ram.total)/1024/1024).toFixed(2)
+    const ram_usage = ram.used
+    const ram_free = ram.free
+    const ram_total = ram.total
     const hdd = getDisk().filter(val=>{
       return val.mounted=="/"
     })[0]
-    const hdd_total = ((+hdd?.kblocks||0)/1024/1024).toFixed(2)
-    const hdd_usage = ((+hdd?.used||0)/1024/1024).toFixed(2)
-    const hdd_free = ((+hdd?.available||0)/1024/1024).toFixed(2)
-    const cpu_total = getCpu.total.toFixed(2)
-    const cpu_usage = getCpu.usage.toFixed(2)
-    const cpu_free = getCpu.free.toFixed(2)
+    const hdd_total = hdd?.kblocks||0
+    const hdd_usage = hdd?.used||0
+    const hdd_free = hdd?.available||0
+    const cpu_total = getCpu.total
+    const cpu_usage = getCpu.usage
+    const cpu_free = getCpu.free
     const data = {
       "ip": getIp(),
       ram_usage,
