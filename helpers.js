@@ -44,31 +44,31 @@ exports.getDisk = ()=>{
 }
 
 exports.getMemory=()=>{
-    const total = +(os.totalmem()/1024/1024/1024).toFixed(2)
-    const free = +(os.freemem()/1024/1024/1024).toFixed(2)
-    const used = +(total-free).toFixed(2)
-    return {total,free,used}
-    // let diskValue = Buffer.from(execSync("free -k | awk 'NR<3'")).toString("ascii").split("\n")
-    // diskValue = diskValue.map(val=>{
-    //     return val.split(" ").filter(fil=>{
-    //         return fil && fil!=""
-    //     })
-    // })
-    // diskValue = diskValue.filter(val=>{
-    //     return val.length>0
-    // })
-    // for (let index = 0; index < diskValue.length; index++) {
-    //    if (index>0) {
-    //         let objData = {}
-    //         const data = diskValue[index]
-    //         data.map((val,i)=>{
-    //            if (diskValue[0][i-1]&&i>0) {
-    //                 objData[diskValue[0][i-1].replace(/[^a-zA-Z]+/g,"").toLocaleLowerCase()] = +val?+(val/1024/1024).toFixed(2):val
-    //            }
-    //         })
-    //         return objData
-    //    }
-    // }
+    // const total = +(os.totalmem()/1024/1024/1024).toFixed(2)
+    // const free = +(os.freemem()/1024/1024/1024).toFixed(2)
+    // const used = +(total-free).toFixed(2)
+    // return {total,free,used}
+    let diskValue = Buffer.from(execSync("free -k | awk 'NR<3'")).toString("ascii").split("\n")
+    diskValue = diskValue.map(val=>{
+        return val.split(" ").filter(fil=>{
+            return fil && fil!=""
+        })
+    })
+    diskValue = diskValue.filter(val=>{
+        return val.length>0
+    })
+    for (let index = 0; index < diskValue.length; index++) {
+       if (index>0) {
+            let objData = {}
+            const data = diskValue[index]
+            data.map((val,i)=>{
+               if (diskValue[0][i-1]&&i>0) {
+                    objData[diskValue[0][i-1].replace(/[^a-zA-Z]+/g,"").toLocaleLowerCase()] = +val?+(val/1024/1024).toFixed(2):val
+               }
+            })
+            return objData
+       }
+    }
 }
 
 
