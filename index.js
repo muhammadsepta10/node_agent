@@ -8,7 +8,7 @@ cron.schedule("*/1 * * * *",async()=>{
     const getCpu = await cpu()
     const ram = getMemory()
     const ram_usage = ram.used
-    const ram_free = ram.free
+    const ram_free = ram.total-ram.used
     const ram_total = ram.total
     const hdd = getDisk().filter(val=>{
       return val.mounted=="/"
