@@ -1,40 +1,41 @@
-const {execSync}= require("child_process")
-const {networkInterfaces} = require("os")
+const { execSync } = require("child_process")
+const { networkInterfaces } = require("os")
 const os = require('os')
+const si = require("systeminformation")
 
-exports.getIp = ()=>{
-const nets = networkInterfaces();
+exports.getIp = () => {
+    const nets = networkInterfaces();
 
-for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-        if (net.family === 'IPv4' && !net.internal) {
-            if(name=="eth0"||name=="ens18"){
-                return net.address
+    for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+            if (net.family === 'IPv4' && !net.internal) {
+                if (name == "eth0" || name == "ens18") {
+                    return net.address
+                }
             }
         }
     }
-}
 
 }
 
-exports.getDisk = ()=>{
+exports.getDisk = () => {
     let returnValue = []
     let diskValue = Buffer.from(execSync("df -k")).toString("ascii").split("\n")
-    diskValue = diskValue.map(val=>{
-        return val.split(" ").filter(fil=>{
-            return fil && fil!=""
+    diskValue = diskValue.map(val => {
+        return val.split(" ").filter(fil => {
+            return fil && fil != ""
         })
     })
-    diskValue = diskValue.filter(val=>{
-        return val.length>0
+    diskValue = diskValue.filter(val => {
+        return val.length > 0
     })
     for (let index = 0; index < diskValue.length; index++) {
-        if (index>0) {
+        if (index > 0) {
             let objData = {}
             const data = diskValue[index]
-            data.map((val,i)=>{
+            data.map((val, i) => {
                 if (diskValue[0][i]) {
-                    objData[diskValue[0][i].replace(/[^a-zA-Z]+/g,"").toLocaleLowerCase()] = +val?+(val/1024/1024).toFixed(2):val
+                    objData[diskValue[0][i].replace(/[^a-zA-Z]+/g, "").toLocaleLowerCase()] = +val ? +(val / 1024 / 1024).toFixed(2) : val
                 }
             })
             returnValue.push(objData)
@@ -43,36 +44,36 @@ exports.getDisk = ()=>{
     return returnValue
 }
 
-exports.getMemory=()=>{
+exports.getMemory = () => {
     // const total = +(os.totalmem()/1024/1024/1024).toFixed(2)
     // const free = +(os.freemem()/1024/1024/1024).toFixed(2)
     // const used = +(total-free).toFixed(2)
     // return {total,free,used}
     let diskValue = Buffer.from(execSync("free -k | awk 'NR<3'")).toString("ascii").split("\n")
-    diskValue = diskValue.map(val=>{
-        return val.split(" ").filter(fil=>{
-            return fil && fil!=""
+    diskValue = diskValue.map(val => {
+        return val.split(" ").filter(fil => {
+            return fil && fil != ""
         })
     })
-    diskValue = diskValue.filter(val=>{
-        return val.length>0
+    diskValue = diskValue.filter(val => {
+        return val.length > 0
     })
     for (let index = 0; index < diskValue.length; index++) {
-       if (index>0) {
+        if (index > 0) {
             let objData = {}
             const data = diskValue[index]
-            data.map((val,i)=>{
-               if (diskValue[0][i-1]&&i>0) {
-                    objData[diskValue[0][i-1].replace(/[^a-zA-Z]+/g,"").toLocaleLowerCase()] = +val?+(val/1024/1024).toFixed(2):val
-               }
+            data.map((val, i) => {
+                if (diskValue[0][i - 1] && i > 0) {
+                    objData[diskValue[0][i - 1].replace(/[^a-zA-Z]+/g, "").toLocaleLowerCase()] = +val ? +(val / 1024 / 1024).toFixed(2) : val
+                }
             })
             return objData
-       }
+        }
     }
 }
 
 
-function getCPUInfo(){ 
+function getCPUInfo() {
     let cpus = os.cpus();
     let user = 0;
     let nice = 0;
@@ -80,7 +81,7 @@ function getCPUInfo(){
     let idle = 0;
     let irq = 0;
     let total = 0;
-    for(let cpu in cpus){	
+    for (let cpu in cpus) {
         user += cpus[cpu].times.user;
         nice += cpus[cpu].times.nice;
         sys += cpus[cpu].times.sys;
@@ -89,22 +90,25 @@ function getCPUInfo(){
     }
     total = user + nice + sys + idle + irq;
     return {
-        'idle': idle, 
+        'idle': idle,
         'total': total
     };
 }
 
 let stats1 = getCPUInfo();
 
-exports.cpu = ()=>{
+exports.cpu = () => {
     const stats2 = getCPUInfo();
     const endIdle = stats2.idle;
     const endTotal = stats2.total;
-    const idle 	= endIdle - stats1.idle;
+    const idle = endIdle - stats1.idle;
     const total = endTotal - stats1.total;
-    const free	= +((idle / total)*100).toFixed(2)
+    const free = +((idle / total) * 100).toFixed(2)
     const usage = +(100 - free).toFixed(2)
+    const temperature = si.cpuTemperature().then(val => {
+        return val.main
+    })
     stats1 = getCPUInfo()
-    return {usage,free,total:100}
+    return { usage, free, total: 100, temperature }
 
 }
