@@ -97,7 +97,7 @@ function getCPUInfo() {
 
 let stats1 = getCPUInfo();
 
-exports.cpu = () => {
+exports.cpu = async () => {
     const stats2 = getCPUInfo();
     const endIdle = stats2.idle;
     const endTotal = stats2.total;
@@ -105,7 +105,7 @@ exports.cpu = () => {
     const total = endTotal - stats1.total;
     const free = +((idle / total) * 100).toFixed(2)
     const usage = +(100 - free).toFixed(2)
-    const temperature = si.cpuTemperature().then(val => {
+    const temperature = await si.cpuTemperature().then(val => {
         return val.main
     })
     stats1 = getCPUInfo()
